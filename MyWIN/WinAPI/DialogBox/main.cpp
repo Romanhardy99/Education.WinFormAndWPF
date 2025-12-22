@@ -1,5 +1,8 @@
 ﻿#include<Windows.h>
 #include"resource.h"
+const CHAR LOGIN_HINT[] = "Введите имя пользователя";
+bool g_isLoginHint = true;
+
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -17,9 +20,21 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
+		SetDlgItemText(hwnd, IDC_EDIT_LOGIN, LOGIN_HINT);
+		g_isLoginHint = true;
+		return TRUE;
 	}
 	break;
 	case WM_COMMAND: //В этой секции обрабатываются нажатия кнопок, клавишь и другие события.
+		if (LOWORD(wParam) == IDC_EDIT_LOGIN &&
+			HIWORD(wParam) == EN_SETFOCUS)
+		{
+			if (g_isLoginHint)
+			{
+				SetDlgItemText(hwnd, IDC_EDIT_LOGIN, "");
+				g_isLoginHint = false;
+			}
+		}
 		switch (LOWORD(wParam))
 		{
 		case IDC_BUTTON_COPY:
