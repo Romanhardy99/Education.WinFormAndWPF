@@ -1,7 +1,7 @@
 ﻿#include<Windows.h>
 #include"resource.h"
 bool showLogin = true;
-
+CONST CHAR g_sz_INVITE[] = "Введите имя пользователя";
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -19,7 +19,10 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
-		SetDlgItemText(hwnd, IDC_EDIT_LOGIN, "Введите имя пользователя");
+		
+		HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)g_sz_INVITE);
+
 		showLogin = true;
 		return TRUE;
 	}
@@ -36,6 +39,25 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		switch (LOWORD(wParam))
 		{
+		case IDC_EDIT_LOGIN:
+			{
+				CONST INT SIZE = 256;
+				CHAR sz_buffer[SIZE] = {};
+				HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN); //hwnd - родительское окно; IDC_EDIT_LOGIN - ResourceID элемента, дескриптор которого мы хотим получить
+				SendMessage(hEditLogin, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+
+				if (HIWORD(wParam) == EN_SETFOCUS)
+				{
+					if (strcmp(sz_buffer, g_sz_INVITE) == 0)
+						SendMessage(hEditLogin, WM_GETTEXT, 0, (LPARAM)"");
+				}
+				if (HIWORD(wParam) == EN_KILLFOCUS)
+				{
+					if (strcmp(sz_buffer, "") == 0)
+						SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)g_sz_INVITE);
+				}
+			}
+			break;
 		case IDC_BUTTON_COPY:
 		{
 			CONST INT SIZE = 256;
