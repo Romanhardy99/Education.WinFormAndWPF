@@ -24,7 +24,6 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)g_sz_INVITE);
 
 		showLogin = true;
-		return TRUE;
 	}
 	break;
 	case WM_COMMAND: //В этой секции обрабатываются нажатия кнопок, клавишь и другие события.

@@ -22,9 +22,35 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)g_sz_VALUES[i]);
 		}
+		return TRUE;
 	}
 		break;
 	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+			case IDCANCEL:
+				{
+					EndDialog(hwnd, 0);
+					break;
+				}
+			case IDOK:
+			{
+				HWND hCombo = GetDlgItem(hwnd, IDC_COMBO); 
+				int index = (int)SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+				if (index == CB_ERR)
+				{
+					MessageBox(hwnd, "Ничего не выбрано", "info", MB_OK | MB_ICONWARNING);
+					break;
+				}
+
+				char buffer[256] = {};
+				SendMessage(hCombo, CB_GETLBTEXT, index, (LPARAM)buffer);
+
+				MessageBox(hwnd, buffer, "В поле выбрано: ", MB_OK | MB_ICONINFORMATION);
+				break;
+			}
+		}
+
 		break;
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
