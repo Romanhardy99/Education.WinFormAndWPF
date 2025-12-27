@@ -1,14 +1,13 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by ListBox.rc
+// Used by Resource.rc
 //
-#define ID_DIALOG_MAIN                  9
 #define IDD_DIALOG_MAIN                 101
-#define IDC_DIALOG_ADD                  103
+#define IDD_DIALOG_ADD                  103
 #define IDC_LIST                        1001
-#define IDD_DIALOG_ADD                  1001
 #define IDC_BUTTON_ADD                  1002
 #define IDC_BUTTON_DELETE               1003
+#define IDC_EDIT1                       1004
 #define IDC_EDIT_ADD                    1004
 
 // Next default values for new objects
