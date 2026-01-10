@@ -3,6 +3,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="Calc/Calc.vcxproj" Id="252cd970-4be7-4ba6-b1b0-03204ab861b0" />
   <Project Path="ComboBox/ComboBox.vcxproj" Id="66662e0c-0707-4661-8c44-0ad5ff9c575a" />
   <Project Path="DialogBox/DialogBox.vcxproj" Id="f6b6c491-b457-4424-8dfc-2973e2c0ed9f" />
   <Project Path="ListBox/ListBox.vcxproj" Id="2960941b-8354-481b-bedb-f8fbf8836695" />
