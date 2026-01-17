@@ -5,6 +5,7 @@
 #include<iostream>
 #include"resource.h"
 
+//#define DEBUG
 
 #define g_i_BUTTON_SIZE				50
 #define g_i_INTERVAL				2
@@ -90,7 +91,10 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
+#ifdef DEBUG
 		AllocConsole();
+#endif //debug
+
 		freopen("CONOUT$", "w", stdout);
 		HWND hEdit = CreateWindowEx
 		(
@@ -124,10 +128,11 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				);
 			}
 		}
-		CreateWindowEx
+		HWND hButton0 = CreateWindowEx
 		(
+
 			NULL, "Button", "0",
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 			BUTTON_X_POSITION(0), BUTTON_Y_POSITION(3),
 			g_i_DOUBLE_BUTTON_SIZE, g_i_BUTTON_SIZE,
 			hwnd,
@@ -136,6 +141,15 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		///////////////////////////////////
+		HBITMAP bmpButton0 = (HBITMAP)LoadImage
+		(
+			GetModuleHandle(NULL),
+			"button0.bmp",
+			IMAGE_BITMAP,
+			g_i_DOUBLE_BUTTON_SIZE,g_i_BUTTON_SIZE,
+			LR_LOADFROMFILE
+		);
+		SendMessage(hButton0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton0);
 		CreateWindowEx
 		(
 			NULL, "Button", ".",
@@ -248,6 +262,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			operation = 0;
 			input = FALSE;
 			input_operation = FALSE;
+			executed = FALSE;
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"0");
 		}
 		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
@@ -263,24 +278,35 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
 		{
+#ifdef DEBUG
+			cout << "EQUAL BUTTON:\n"
+				;
+			#endif
 			if (input)
 			{
 				(a == DBL_MIN ? a : b) = atof(sz_display);
 				input = FALSE;
 			}
-			switch (operation)
+			/*if (a == DBL_MIN || b == DBL_MIN || operation == 0) break;*/
+			else if (b == DBL_MIN) b = a;
+			/*if (operation && a == DBL_MIN) a = atof(sz_display);*/
+			if (a != DBL_MIN && b != DBL_MIN && operation != 0)
 			{
-			case IDC_BUTTON_PLUS:	a += b; break;
-			case IDC_BUTTON_MINUS:	a -= b; break;
-			case IDC_BUTTON_ASTER:	a *= b; break;
-			case IDC_BUTTON_SLASH:	a /= b; break;
-			}
-			input_operation = FALSE;
-			executed = TRUE;
-			if(a != DBL_MIN)
-			{
-				sprintf(sz_display, "%g", a);
-				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				switch (operation)
+				{
+				case IDC_BUTTON_PLUS:	a += b; break;
+				case IDC_BUTTON_MINUS:	a -= b; break;
+				case IDC_BUTTON_ASTER:	a *= b; break;
+				case IDC_BUTTON_SLASH:	a /= b; break;
+				}
+
+				input_operation = FALSE;
+				executed = TRUE;
+				if (a != DBL_MIN)
+				{
+					sprintf(sz_display, "%g", a);
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				}
 			}
 		}
 
