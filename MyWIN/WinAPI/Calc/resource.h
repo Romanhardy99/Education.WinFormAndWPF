@@ -1,6 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Calc.rc
+#define IDR_EXIT				   200
+#define IDR_METAL_MISTRAL		   201
+#define IDR_SQUARE_BLUE			   202
+#define IDR_MY_STYLE			   203
 
 #define IDC_DISPLAY                999
 #define IDC_BUTTON_0              1000

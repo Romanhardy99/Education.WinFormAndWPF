@@ -24,7 +24,8 @@
 #define BUTTON_X_POSITION(SHIFT)	g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (SHIFT)
 #define BUTTON_Y_POSITION(SHIFT)	g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (SHIFT)
 
-CHAR g_OPERATION[] = "+-*/";
+CONST CHAR g_OPERATION[] = "+-*/";
+CONST CHAR* g_SKINS[] = { "metal_mistral", "square_blue", "my_style" };
 
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_522";
@@ -414,6 +415,33 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_CLR), BM_SETSTATE, FALSE, 0); break;
 			//case VK_RETURN:		SendMessage(GetDlgItem(hwnd, IDC_BUTTON_EQUAL), BM_SETSTATE, FALSE, 0); break;
 		}
+	}
+	break;
+	case WM_CONTEXTMENU:
+	{
+		HMENU hMenu = CreatePopupMenu();
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_EXIT, "Exit");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, NULL, NULL);
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_METAL_MISTRAL, "Metal mistral");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_SQUARE_BLUE, "Square blue");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_MY_STYLE, "My style");
+		INT item = TrackPopupMenuEx
+		(
+			hMenu, 
+			TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_HORNEGANIMATION | TPM_VERNEGANIMATION,
+			LOWORD(lParam), HIWORD(lParam),
+			(HWND)wParam,
+			NULL
+		);
+		switch (item)
+		{
+		case IDR_SQUARE_BLUE: SetSkin(hwnd, "square_blue"); break;
+		case IDR_METAL_MISTRAL: SetSkin(hwnd, "metal_mistral"); break;
+		case IDR_MY_STYLE: SetSkin(hwnd, "my_style"); break;
+		case IDR_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0);
+
+		}
+		DestroyMenu(hMenu);
 	}
 	break;
 	case WM_DESTROY:
