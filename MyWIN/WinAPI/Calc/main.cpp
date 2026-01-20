@@ -91,6 +91,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+#pragma region CREATE
 	case WM_CREATE:
 	{
 #ifdef DEBUG
@@ -217,6 +218,21 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetSkin(hwnd, "my_style");
 	}
 	break;
+#pragma endregion
+
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;  //Handler to Device Context
+		//Контекст устройства - это набор ресурсов, привязанных к определенному устройству, 
+		//позволяющий применять к этому устройству графические функции.
+		//В ОС Windows абсолютно для любого окна можно получить контекст устройства при помощи функции GetDC(HWND) 
+		SetBkMode(hdc, OPAQUE); //Задаем непрозрачный режим отображения hEditDisplay
+		SetBkColor(hdc, RGB(0, 0, 100));
+		SetTextColor(hdc, RGB(200, 200, 200));
+		HBRUSH hBackground = CreateSolidBrush(RGB(0, 0, 200));
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hBackground);
+		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+	}
 	case WM_COMMAND:
 	{
 		static DOUBLE a = DBL_MIN, b = DBL_MIN; //минимальное возможное значение которое может хранить дабл
