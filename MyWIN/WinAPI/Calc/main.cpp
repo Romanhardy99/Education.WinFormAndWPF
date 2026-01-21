@@ -27,10 +27,18 @@
 CONST CHAR g_OPERATION[] = "+-*/";
 CONST CHAR* g_SKINS[] = { "metal_mistral", "square_blue", "my_style" };
 
+COLORREF g_editColor = RGB(20, 20, 20);
+COLORREF g_editTextColor = RGB(0, 220, 0);
+COLORREF g_windowColor = RGB(10, 10, 10);
+HBRUSH g_windowBrush = NULL;
+HFONT g_editFont = NULL;
+
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_522";
 LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-VOID SetSkin(HWND hwnd, const CHAR sz_skin[]);
+
+VOID SetButtonSkin(HWND hwnd, const CHAR sz_skin[]);
+void SetColorSkin(HWND hwnd, const CHAR* skin);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -110,6 +118,16 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+
+		g_editFont = CreateFont
+		(
+			24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+			ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_SWISS,
+			"Digit"
+		);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)g_editFont, TRUE);
+
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)
 		{
@@ -215,23 +233,33 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		SetSkin(hwnd, "my_style");
+		g_windowBrush = CreateSolidBrush(g_windowColor);
+		SetButtonSkin(hwnd, "my_style");
 	}
 	break;
 #pragma endregion
 
 	case WM_CTLCOLOREDIT:
 	{
-		HDC hdc = (HDC)wParam;  //Handler to Device Context
-		//Контекст устройства - это набор ресурсов, привязанных к определенному устройству, 
-		//позволяющий применять к этому устройству графические функции.
-		//В ОС Windows абсолютно для любого окна можно получить контекст устройства при помощи функции GetDC(HWND) 
-		SetBkMode(hdc, OPAQUE); //Задаем непрозрачный режим отображения hEditDisplay
-		SetBkColor(hdc, RGB(0, 0, 100));
-		SetTextColor(hdc, RGB(200, 200, 200));
-		HBRUSH hBackground = CreateSolidBrush(RGB(0, 0, 200));
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hBackground);
-		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+		HDC hdc = (HDC)wParam;
+
+		SetBkMode(hdc, OPAQUE);
+		SetBkColor(hdc, g_editColor);
+		SetTextColor(hdc, g_editTextColor);
+
+		static HBRUSH hEditBrush = NULL;
+		if (hEditBrush) DeleteObject(hEditBrush);
+		hEditBrush = CreateSolidBrush(g_editColor);
+
+		return (LRESULT)hEditBrush;
+	}
+	case WM_ERASEBKGND:
+	{
+		HDC hdc = (HDC)wParam;
+		RECT rc;
+		GetClientRect(hwnd, &rc);
+		FillRect(hdc, &rc, g_windowBrush);
+		return 1; 
 	}
 	case WM_COMMAND:
 	{
@@ -441,6 +469,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_METAL_MISTRAL, "Metal mistral");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_SQUARE_BLUE, "Square blue");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_MY_STYLE, "My style");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, NULL, NULL);
 		INT item = TrackPopupMenuEx
 		(
 			hMenu, 
@@ -451,9 +480,9 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		);
 		switch (item)
 		{
-		case IDR_SQUARE_BLUE: SetSkin(hwnd, "square_blue"); break;
-		case IDR_METAL_MISTRAL: SetSkin(hwnd, "metal_mistral"); break;
-		case IDR_MY_STYLE: SetSkin(hwnd, "my_style"); break;
+		case IDR_SQUARE_BLUE: SetButtonSkin(hwnd, "square_blue"); SetColorSkin(hwnd, "square_blue"); break;
+		case IDR_METAL_MISTRAL: SetButtonSkin(hwnd, "metal_mistral"); SetColorSkin(hwnd, "metal_mistral"); break;
+		case IDR_MY_STYLE: SetButtonSkin(hwnd, "my_style"); SetColorSkin(hwnd, "my_style"); break;
 		case IDR_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0);
 
 		}
@@ -462,6 +491,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_DESTROY:
 		FreeConsole();
+		if (g_editFont) DeleteObject(g_editFont);
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
@@ -471,7 +501,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-VOID SetSkin(HWND hwnd, const CHAR sz_skin[])
+VOID SetButtonSkin(HWND hwnd, const CHAR sz_skin[])
 {
 	CONST CHAR* sz_NAMES[] =
 	{
@@ -512,4 +542,29 @@ VOID SetSkin(HWND hwnd, const CHAR sz_skin[])
 		);
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 	}
+}
+
+void SetColorSkin(HWND hwnd, const CHAR sz_skin[])
+{
+	if (!strcmp(sz_skin, "my_style"))
+	{
+		g_editColor = RGB(0, 0, 100);
+		g_editTextColor = RGB(200, 200, 200);
+		g_windowColor = RGB(20, 20, 20);
+	}
+	else if (!strcmp(sz_skin, "metal_mistral"))
+	{
+		g_editColor = RGB(40, 40, 40);
+		g_editTextColor = RGB(230, 230, 230);
+		g_windowColor = RGB(60, 60, 60);
+	}
+	else if (!strcmp(sz_skin, "square_blue"))
+	{
+		g_editColor = RGB(230, 240, 255);
+		g_editTextColor = RGB(0, 0, 0);
+		g_windowColor = RGB(200, 220, 240);
+	}
+	if (g_windowBrush) DeleteObject(g_windowBrush);
+	g_windowBrush = CreateSolidBrush(g_windowColor);
+	InvalidateRect(hwnd, NULL, TRUE);
 }
