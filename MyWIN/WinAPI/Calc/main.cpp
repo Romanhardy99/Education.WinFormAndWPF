@@ -118,7 +118,7 @@ LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-
+		AddFontResourceEx("Digit.ttf", FR_PRIVATE, 0);
 		g_editFont = CreateFont
 		(
 			24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
