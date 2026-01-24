@@ -8,5 +8,6 @@
   <Project Path="DialogBox/DialogBox.vcxproj" Id="f6b6c491-b457-4424-8dfc-2973e2c0ed9f" />
   <Project Path="ListBox/ListBox.vcxproj" Id="2960941b-8354-481b-bedb-f8fbf8836695" />
   <Project Path="MainWindow/MainWindow.vcxproj" Id="773b5c81-09fe-4b03-ae1d-d6f8eca0144a" />
+  <Project Path="Resource-onlyDLL/Resource-onlyDLL.vcxproj" Id="733db6ea-b5c1-4fec-a587-5c94ceda8b81" />
   <Project Path="WinAPI/WinAPI.vcxproj" Id="7434f661-e0a9-4442-a55c-6afd817893d7" />
 </Solution>
